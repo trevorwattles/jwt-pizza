@@ -13,9 +13,9 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | View franchise<br/>(as diner) | `franchiseDashboard.tsx` | `[GET] /api/franchise/6` | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` |
 | Logout | `logout.tsx` | `[DELETE] /api/auth` | `DELETE FROM auth WHERE token=?` |
 | View About page | `about.tsx` | `_none_` | `_none_` |
-| View History page | | | |
-| Login as franchisee<br/>(f@jwt.com, pw: franchisee) | | | |
-| View franchise<br/>(as franchisee) | | | |
+| View History page | `history.tsx` | `_none_` | `_none_` |
+| Login as franchisee<br/>(f@jwt.com, pw: franchisee) | `login.tsx` | `[PUT] /api/auth` | `SELECT * FROM user WHERE email=?` <br/>`SELECT * FROM userRole WHERE userId=?` |
+| View franchise<br/>(as franchisee) | `franchiseDashboard.tsx` | `[GET] /api/franchise/2` | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/>`SELECT id, name FROM franchise WHERE id in (?)` <br/>`SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee'` <br/>`SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id` |
 | Create a store | | | |
 | Close a store | | | |
 | Login as admin<br/>(a@jwt.com, pw: admin) | | | |
