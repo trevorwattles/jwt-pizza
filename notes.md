@@ -20,5 +20,5 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Close a store | `closeStore.tsx` or franchise dashboard | `[DELETE] /api/franchise/1/store/3` | `DELETE FROM store WHERE franchiseId=? AND id=?` |
 | Login as admin<br/>(a@jwt.com, pw: admin) | `login.tsx` | `[PUT] /api/auth` | `SELECT * FROM user WHERE email=?` <br/>`SELECT * FROM userRole WHERE userId=?` |
 | View Admin page | `adminDashboard.tsx` | `[GET] /api/franchise?page=0&limit=3&name=*` | `SELECT id, name FROM franchise WHERE name LIKE ? LIMIT ? OFFSET ?` <br/>`SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee'` <br/>`SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id` |
-| Create a franchise for t@jwt.com | | | |
-| Close the franchise for t@jwt.com | | | |
+| Create a franchise for t@jwt.com | `createFranchise.tsx` or admin dashboard | `[POST] /api/franchise` | `INSERT INTO franchise (name) VALUES (?)` <br/>`INSERT INTO userRole (userId, role, objectId) VALUES (?, ?, ?)` |
+| Close the franchise for t@jwt.com | `closeFranchise.tsx` or admin dashboard | `[DELETE] /api/franchise/3` | `DELETE FROM store WHERE franchiseId=?` <br/>`DELETE FROM userRole WHERE objectId=?` <br/>`DELETE FROM franchise WHERE id=?` |
