@@ -10,7 +10,7 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Order pizza | `menu.tsx` | `[GET] /api/order/menu` <br/>`[POST] /api/order` | `SELECT * FROM menu` <br/>`INSERT INTO dinerOrder (dinerId, franchiseId, storeId, date) VALUES (?, ?, ?, now())` <br/>`INSERT INTO orderItem (orderId, menuId, description, price) VALUES (?, ?, ?, ?)` |
 | Verify pizza | `delivery.tsx` | `[POST] https://pizza-factory.cs329.click/api/order/verify` | `_none_` |
 | View profile page | `dinerDashboard.tsx` | `[GET] /api/user/me` <br/>`[GET] /api/order` | `SELECT * FROM user WHERE id=?` <br/>`SELECT * FROM userRole WHERE userId=?` <br/>`SELECT id, franchiseId, storeId, date FROM dinerOrder WHERE dinerId=?` <br/>`SELECT id, menuId, description, price FROM orderItem WHERE orderId=?` |
-| View franchise<br/>(as diner) | | | |
+| View franchise<br/>(as diner) | `franchiseDashboard.tsx` | `[GET] /api/franchise/6` | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` |
 | Logout | | | |
 | View About page | | | |
 | View History page | | | |
