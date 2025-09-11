@@ -16,8 +16,8 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | View History page | `history.tsx` | `_none_` | `_none_` |
 | Login as franchisee<br/>(f@jwt.com, pw: franchisee) | `login.tsx` | `[PUT] /api/auth` | `SELECT * FROM user WHERE email=?` <br/>`SELECT * FROM userRole WHERE userId=?` |
 | View franchise<br/>(as franchisee) | `franchiseDashboard.tsx` | `[GET] /api/franchise/2` | `SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/>`SELECT id, name FROM franchise WHERE id in (?)` <br/>`SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee'` <br/>`SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id` |
-| Create a store | | | |
-| Close a store | | | |
+| Create a store | `createStore.tsx` or franchise dashboard | `[POST] /api/franchise/1/store` | `INSERT INTO store (franchiseId, name) VALUES (?, ?)` |
+| Close a store | `closeStore.tsx` or franchise dashboard | `[DELETE] /api/franchise/1/store/3` | `DELETE FROM store WHERE franchiseId=? AND id=?` |
 | Login as admin<br/>(a@jwt.com, pw: admin) | | | |
 | View Admin page | | | |
 | Create a franchise for t@jwt.com | | | |
