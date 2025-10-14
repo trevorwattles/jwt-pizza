@@ -43,15 +43,15 @@ test('view diner dashboard with orders', async ({ page }) => {
   });
 
   await page.goto('/diner-dashboard');
-  
+
   // Verify dashboard content
   await expect(page.getByText('Your pizza kitchen')).toBeVisible();
-  
-  // Check that user info labels are displayed
-  await expect(page.locator('text=name:')).toBeVisible();
-  await expect(page.locator('text=email:')).toBeVisible();
-  await expect(page.locator('text=role:')).toBeVisible();
-  
+
+  // Check that user info labels are displayed (use .first() to get the visible one, not the dialog)
+  await expect(page.locator('text=name:').first()).toBeVisible();
+  await expect(page.locator('text=email:').first()).toBeVisible();
+  await expect(page.locator('text=role:').first()).toBeVisible();
+
   // Verify order history table
   await expect(page.getByText('Here is your history of all the good times')).toBeVisible();
   await expect(page.getByRole('table')).toBeVisible();
@@ -75,7 +75,7 @@ test('view diner dashboard without orders', async ({ page }) => {
   });
 
   await page.goto('/diner-dashboard');
-  
+
   // Verify empty state message
   await expect(page.getByText('How have you lived this long without having a pizza?')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Buy one' })).toBeVisible();
@@ -109,9 +109,9 @@ test('dashboard displays user roles correctly', async ({ page }) => {
   });
 
   await page.goto('/diner-dashboard');
-  
-  // Verify role section exists
-  await expect(page.locator('text=role:')).toBeVisible();
+
+  // Verify role section exists (use .first() to avoid dialog element)
+  await expect(page.locator('text=role:').first()).toBeVisible();
   
   // Verify diner role is displayed
   await expect(page.getByText('diner', { exact: true })).toBeVisible();

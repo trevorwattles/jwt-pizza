@@ -74,9 +74,9 @@ test('admin dashboard pagination', async ({ page }) => {
 
   await page.goto('/admin-dashboard');
 
-  // Verify pagination buttons exist
-  await expect(page.getByRole('button', { name: '«' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '»' })).toBeVisible();
+  // Verify pagination buttons exist (use .first() to get franchise pagination)
+  await expect(page.getByRole('button', { name: '«' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: '»' }).first()).toBeVisible();
 });
 
 test('admin dashboard filter franchises', async ({ page }) => {
@@ -95,9 +95,9 @@ test('admin dashboard filter franchises', async ({ page }) => {
 
   await page.goto('/admin-dashboard');
 
-  // Use filter
+  // Use filter (use .first() to target franchise filter)
   await page.getByPlaceholder('Filter franchises').fill('Pizza');
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByRole('button', { name: 'Submit' }).first().click();
 
   await page.waitForTimeout(500);
 });
@@ -227,5 +227,121 @@ test('admin dashboard close franchise button', async ({ page }) => {
   await closeButtons.first().click();
 
   // navigate to close franchise page
+  await page.waitForTimeout(500);
+});
+
+test('list users as admin', async ({ page }) => {
+  const mockUsersList = {
+    users: [
+      { id: 1, name: 'Admin User', email: 'admin@jwt.com', roles: [{ role: 'admin' }] },
+      { id: 2, name: 'Franchise Admin', email: 'fadmin@jwt.com', roles: [{ role: 'franchisee' }] },
+      { id: 3, name: 'Pizza Diner', email: 'diner@jwt.com', roles: [{ role: 'diner' }] },
+    ],
+    more: false,
+  };
+
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.setItem('token', 'admin-token');
+  });
+
+  await page.route('*/**/api/user/me', async (route) => {
+    await route.fulfill({ json: mockAdminUser });
+  });
+
+  await page.route(/\/api\/franchise\?.*/, async (route) => {
+    await route.fulfill({ json: mockFranchiseList });
+  });
+
+  await page.route(/\/api\/user\?.*/, async (route) => {
+    await route.fulfill({ json: mockUsersList });
+  });
+
+  await page.goto('/admin-dashboard');
+
+  // Check that we can see a "Users" heading
+  await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible();
+  
+  // Check that user data is displayed
+  await expect(page.getByText('Pizza Diner')).toBeVisible();
+  await expect(page.getByText('diner@jwt.com')).toBeVisible();
+});
+test('delete user as admin', async ({ page }) => {
+  const mockUsersList = {
+    users: [
+      { id: 1, name: 'Admin User', email: 'admin@jwt.com', roles: [{ role: 'admin' }] },
+      { id: 2, name: 'Franchise Admin', email: 'fadmin@jwt.com', roles: [{ role: 'franchisee' }] },
+      { id: 3, name: 'Pizza Diner', email: 'diner@jwt.com', roles: [{ role: 'diner' }] },
+    ],
+    more: false,
+  };
+
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.setItem('token', 'admin-token');
+  });
+
+  await page.route('*/**/api/user/me', async (route) => {
+    await route.fulfill({ json: mockAdminUser });
+  });
+
+  await page.route(/\/api\/franchise\?.*/, async (route) => {
+    await route.fulfill({ json: mockFranchiseList });
+  });
+
+  await page.route(/\/api\/user\?.*/, async (route) => {
+    await route.fulfill({ json: mockUsersList });
+  });
+
+  let deleteCallMade = false;
+  await page.route('*/**/api/user/3', async (route) => {
+    if (route.request().method() === 'DELETE') {
+      deleteCallMade = true;
+      await route.fulfill({ json: {} });
+    }
+  });
+
+  await page.goto('/admin-dashboard');
+
+  // Find and click delete button for Pizza Diner
+  const deleteButtons = page.getByRole('button', { name: /Delete/ });
+  await deleteButtons.last().click();
+
+  await page.waitForTimeout(500);
+  expect(deleteCallMade).toBe(true);
+});
+
+test('filter users by name', async ({ page }) => {
+  const mockUsersList = {
+    users: [
+      { id: 1, name: 'Admin User', email: 'admin@jwt.com', roles: [{ role: 'admin' }] },
+      { id: 3, name: 'Pizza Diner', email: 'diner@jwt.com', roles: [{ role: 'diner' }] },
+    ],
+    more: false,
+  };
+
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.setItem('token', 'admin-token');
+  });
+
+  await page.route('*/**/api/user/me', async (route) => {
+    await route.fulfill({ json: mockAdminUser });
+  });
+
+  await page.route(/\/api\/franchise\?.*/, async (route) => {
+    await route.fulfill({ json: mockFranchiseList });
+  });
+
+  await page.route(/\/api\/user\?.*/, async (route) => {
+    await route.fulfill({ json: mockUsersList });
+  });
+
+  await page.goto('/admin-dashboard');
+
+  // Use user filter
+  await page.getByPlaceholder('Filter users').fill('Pizza');
+  await page.getByRole('button', { name: 'Submit' }).nth(1).click();
+
   await page.waitForTimeout(500);
 });
