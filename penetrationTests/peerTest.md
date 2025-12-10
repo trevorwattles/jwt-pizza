@@ -271,7 +271,7 @@ Orders showed on the user dashboard with **0 B price**.
 
 ## Evidence Screenshot
 
-![freeorders](freeorders.png)
+![freeorders](freeOrders.png)
 
 
 | ID  | PRICE | DATE |
